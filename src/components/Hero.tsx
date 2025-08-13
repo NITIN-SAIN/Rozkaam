@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Zap, Shield, Heart, Calendar } from 'lucide-react';
 
 interface HeroProps {
@@ -7,6 +8,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ onServiceSelect, isLoggedIn }) => {
+  const navigate = useNavigate();
+
   const handleBookService = () => {
     onServiceSelect({ 
       name: 'Quick Service Booking', 
@@ -15,8 +18,12 @@ const Hero: React.FC<HeroProps> = ({ onServiceSelect, isLoggedIn }) => {
     });
   };
 
+  const handleExplorePlans = () => {
+    navigate('/subscription-plans');
+  };
+
   const emergencyServices = [
-    { icon: Zap, name: 'Electrician', time: '30 mins' },
+    { icon: Zap, name: 'Technician', time: '30 mins' },
     { icon: Shield, name: 'Plumber', time: '45 mins' },
     { icon: Heart, name: 'Emergency Care', time: '15 mins' },
   ];
@@ -60,7 +67,10 @@ const Hero: React.FC<HeroProps> = ({ onServiceSelect, isLoggedIn }) => {
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               
-              <button className="px-8 py-4 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-300">
+              <button 
+                onClick={handleExplorePlans}
+                className="px-8 py-4 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-300"
+              >
                 Explore Plans
               </button>
             </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   X, 
   Home, 
@@ -19,33 +20,31 @@ interface MobileMenuProps {
   onClose: () => void;
   isLoggedIn: boolean;
   onLogin: () => void;
-  currentView: string;
-  onViewChange: (view: string) => void;
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   onClose,
   isLoggedIn,
-  onLogin,
-  currentView,
-  onViewChange
+  onLogin
 }) => {
+  const navigate = useNavigate();
+
   const menuItems = [
-    { id: 'home', name: 'Home', icon: Home },
-    { id: 'services', name: 'All Services', icon: Settings },
-    { id: 'wellness', name: 'Mental Wellness', icon: Heart },
-    { id: 'plans', name: 'Subscription Plans', icon: Crown },
-    { id: 'professionals', name: 'Find Professionals', icon: User },
-    { id: 'safety', name: 'Trust & Safety', icon: Shield }
+    { id: 'home', name: 'Home', icon: Home, path: '/' },
+    { id: 'services', name: 'All Services', icon: Settings, path: '/services' },
+    { id: 'wellness', name: 'Mental Wellness', icon: Heart, path: '/services' },
+    { id: 'plans', name: 'Subscription Plans', icon: Crown, path: '/subscription-plans' },
+    { id: 'professionals', name: 'Find Professionals', icon: User, path: '/professionals' },
+    { id: 'safety', name: 'Trust & Safety', icon: Shield, path: '/trust-safety' }
   ];
 
   const userMenuItems = isLoggedIn ? [
-    { id: 'dashboard', name: 'My Dashboard', icon: User },
-    { id: 'bookings', name: 'My Bookings', icon: Calendar },
-    { id: 'wallet', name: 'Wallet', icon: Wallet },
-    { id: 'rewards', name: 'Rewards & Offers', icon: Gift },
-    { id: 'settings', name: 'Settings', icon: Settings }
+    { id: 'dashboard', name: 'My Dashboard', icon: User, path: '/dashboard' },
+    { id: 'bookings', name: 'My Bookings', icon: Calendar, path: '/dashboard' },
+    { id: 'wallet', name: 'Wallet', icon: Wallet, path: '/dashboard' },
+    { id: 'rewards', name: 'Rewards & Offers', icon: Gift, path: '/dashboard' },
+    { id: 'settings', name: 'Settings', icon: Settings, path: '/profile' }
   ] : [];
 
   const supportItems = [
@@ -54,8 +53,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
     { name: 'Contact Support', icon: Phone, href: 'tel:1800-ROZKAAM' }
   ];
 
-  const handleMenuClick = (itemId: string) => {
-    onViewChange(itemId);
+  const handleMenuClick = (path: string) => {
+    navigate(path);
     onClose();
   };
 
@@ -135,10 +134,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleMenuClick(item.id)}
-                className={`w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors ${
-                  currentView === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-gray-700'
-                }`}
+                onClick={() => handleMenuClick(item.path)}
+                className="w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors text-gray-700"
               >
                 <item.icon className="w-5 h-5 mr-3" />
                 {item.name}
@@ -159,10 +156,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               {userMenuItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => handleMenuClick(item.id)}
-                  className={`w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors ${
-                    currentView === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-gray-700'
-                  }`}
+                  onClick={() => handleMenuClick(item.path)}
+                  className="w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors text-gray-700"
                 >
                   <item.icon className="w-5 h-5 mr-3" />
                   {item.name}

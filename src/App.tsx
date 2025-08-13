@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ServiceCategories from './components/ServiceCategories';
@@ -12,83 +14,108 @@ import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import MobileMenu from './components/MobileMenu';
 import ProtectedRoute from './components/ProtectedRoute';
+import Login from './components/Login';
+import Signup from './components/Signup';
 import UserProfile from './components/UserProfile';
+import SearchResults from './components/SearchResults';
 
-function AppContent() {
-  const { currentUser } = useAuth();
-  const [currentView, setCurrentView] = useState('home');
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+const AppContent: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const handleServiceSelect = (service: any) => {
     setSelectedService(service);
-    setShowBookingModal(true);
+    setIsBookingModalOpen(true);
   };
 
-  const renderMainContent = () => {
-    if (currentUser && currentView === 'dashboard') {
-      return <UserDashboard onViewChange={setCurrentView} />;
-    }
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
 
-    if (currentUser && currentView === 'profile') {
-      return <UserProfile />;
-    }
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
-    return (
-      <>
-        <Hero onServiceSelect={handleServiceSelect} isLoggedIn={!!currentUser} />
-        <ServiceCategories onServiceSelect={handleServiceSelect} />
-        <ServiceWizard onServiceSelect={handleServiceSelect} />
-        <SubscriptionPlans />
-        <ProfessionalProfiles />
-        <TrustSafety />
-      </>
-    );
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header 
-        isLoggedIn={!!currentUser}
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        onMenuToggle={() => setShowMobileMenu(!showMobileMenu)}
-      />
-      
-      <MobileMenu 
-        isOpen={showMobileMenu}
-        onClose={() => setShowMobileMenu(false)}
-        isLoggedIn={!!currentUser}
-        currentView={currentView}
-        onViewChange={setCurrentView}
-      />
-
-      <main className="relative">
-        {renderMainContent()}
-      </main>
-
-      <Footer />
-
-      {showBookingModal && (
-        <BookingModal
-          service={selectedService}
-          onClose={() => setShowBookingModal(false)}
-          isLoggedIn={!!currentUser}
+    <Router>
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header 
+          isLoggedIn={isLoggedIn}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+          onMenuToggle={toggleMobileMenu}
         />
-      )}
-    </div>
-  );
-}
 
-function App() {
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Hero onServiceSelect={handleServiceSelect} isLoggedIn={isLoggedIn} />} />
+            <Route path="/services" element={<ServiceCategories onServiceSelect={handleServiceSelect} />} />
+            <Route path="/service-wizard" element={<ServiceWizard onServiceSelect={handleServiceSelect} />} />
+            <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+            <Route path="/professionals" element={<ProfessionalProfiles />} />
+            <Route path="/trust-safety" element={<TrustSafety />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/signup" element={<Signup onSignup={handleLogin} />} />
+            <Route path="/search" element={<SearchResults onServiceSelect={handleServiceSelect} />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <UserDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            {/* Catch all route - redirect to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+
+        <Footer />
+
+        {/* Mobile Menu */}
+        <MobileMenu 
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          isLoggedIn={isLoggedIn}
+          onLogin={handleLogin}
+        />
+
+        {/* Booking Modal */}
+        {isBookingModalOpen && selectedService && (
+          <BookingModal
+            service={selectedService}
+            isOpen={isBookingModalOpen}
+            onClose={() => {
+              setIsBookingModalOpen(false);
+              setSelectedService(null);
+            }}
+          />
+        )}
+      </div>
+    </Router>
+  );
+};
+
+function App(){
   return (
     <AuthProvider>
-      <ProtectedRoute>
-        <AppContent />
-      </ProtectedRoute>
+      <AppContent />
     </AuthProvider>
-  );
+  )
 }
 
 export default App;

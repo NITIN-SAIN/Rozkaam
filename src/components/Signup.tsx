@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 
 interface SignupProps {
-  onSwitchToLogin: () => void;
+  onSignup: () => void;
 }
 
-export default function Signup({ onSwitchToLogin }: SignupProps) {
+export default function Signup({ onSignup }: SignupProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,6 +17,7 @@ export default function Signup({ onSwitchToLogin }: SignupProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,6 +34,8 @@ export default function Signup({ onSwitchToLogin }: SignupProps) {
       setError('');
       setLoading(true);
       await signup(email, password, displayName);
+      onSignup();
+      navigate('/dashboard');
     } catch (error) {
       setError('Failed to create an account. Please try again.');
       console.error('Signup error:', error);
@@ -52,12 +56,12 @@ export default function Signup({ onSwitchToLogin }: SignupProps) {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <button
-              onClick={onSwitchToLogin}
+            <Link
+              to="/login"
               className="font-medium text-purple-600 hover:text-purple-500"
             >
               sign in to your existing account
-            </button>
+            </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -183,19 +187,6 @@ export default function Signup({ onSwitchToLogin }: SignupProps) {
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
-          </div>
-
-          <div className="text-center">
-            <p className="text-xs text-gray-500">
-              By creating an account, you agree to our{' '}
-              <a href="#" className="text-purple-600 hover:text-purple-500">
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-purple-600 hover:text-purple-500">
-                Privacy Policy
-              </a>
-            </p>
           </div>
         </form>
       </div>

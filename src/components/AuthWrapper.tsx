@@ -1,20 +1,12 @@
-import React, { useState } from 'react';
-import Login from './Login';
-import Signup from './Signup';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AuthWrapper() {
-  const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
 
-  const switchToSignup = () => setIsLogin(false);
-  const switchToLogin = () => setIsLogin(true);
+  useEffect(() => {
+    navigate('/login');
+  }, [navigate]);
 
-  return (
-    <div>
-      {isLogin ? (
-        <Login onSwitchToSignup={switchToSignup} />
-      ) : (
-        <Signup onSwitchToLogin={switchToLogin} />
-      )}
-    </div>
-  );
+  return null;
 } 

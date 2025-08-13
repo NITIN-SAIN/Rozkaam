@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface LoginProps {
-  onSwitchToSignup: () => void;
+  onLogin: () => void;
 }
 
-export default function Login({ onSwitchToSignup }: LoginProps) {
+export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,6 +23,8 @@ export default function Login({ onSwitchToSignup }: LoginProps) {
       setError('');
       setLoading(true);
       await login(email, password);
+      onLogin();
+      navigate('/dashboard');
     } catch (error) {
       setError('Failed to log in. Please check your credentials.');
       console.error('Login error:', error);
@@ -41,12 +45,12 @@ export default function Login({ onSwitchToSignup }: LoginProps) {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <button
-              onClick={onSwitchToSignup}
+            <Link
+              to="/signup"
               className="font-medium text-purple-600 hover:text-purple-500"
             >
               create a new account
-            </button>
+            </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

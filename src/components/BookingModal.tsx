@@ -16,16 +16,14 @@ import {
 
 interface BookingModalProps {
   service: any;
+  isOpen: boolean;
   onClose: () => void;
-  isLoggedIn: boolean;
-  onLogin: () => void;
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({ 
   service, 
-  onClose, 
-  isLoggedIn, 
-  onLogin 
+  isOpen,
+  onClose
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState({
@@ -40,6 +38,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   const [promoCode, setPromoCode] = useState('');
   const [isRecurring, setIsRecurring] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const mockProfessionals = [
     {
@@ -78,7 +77,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   const handleNext = () => {
     if (!isLoggedIn && currentStep === 1) {
-      onLogin();
+      setIsLoggedIn(true);
       return;
     }
     setCurrentStep(Math.min(4, currentStep + 1));
@@ -100,6 +99,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
     const finalPrice = basePrice - discount;
     return { basePrice, discount, finalPrice };
   };
+
+  if (!isOpen) return null;
 
   const renderStep = () => {
     switch (currentStep) {
